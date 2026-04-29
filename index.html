@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title> ... </title>
+    <style>
+        /* ---------- CSS VARIABLES FOR 7 THEMES ---------- */
+        :root {
+            --bg-base: #1e1e2e;
+            --bg-surface: #181825;
+            --bg-card: #313244;
+            --bg-elevated: #45475a;
+            --bg-grid: #585b70;
+            --border: #45475a;
+            --text-primary: #cdd6f4;
+            --text-secondary: #a6adc8;
+            --text-muted: #6c7086;
+            --accent: #89b4fa;
+            --success: #a6e3a1;
+            --warning: #f9e2af;
+            --highlight: #f5e0dc;
+            --course-cs: #cba6f7;
+            --course-ee: #f9e2af;
+            --course-math: #a6e3a1;
+            --course-other: #89b4fa;
+        }
+        [data-theme="latte"] {
+            --bg-base: #eff1f5; --bg-surface: #e6e9ef; --bg-card: #dce0e8; --bg-elevated: #ccd0da;
+            --bg-grid: #bcc0cc; --border: #9ca0b0; --text-primary: #4c4f69; --text-secondary: #5c5f77;
+            --text-muted: #7c7f93; --accent: #1e66f5; --success: #40a02b; --warning: #df8e1d;
+            --highlight: #dc8a78; --course-cs: #8839ef; --course-ee: #fe640b; --course-math: #40a02b; --course-other: #1e66f5;
+        }
+        [data-theme="onedark"] {
+            --bg-base: #282c34; --bg-surface: #21252b; --bg-card: #2c313a; --bg-elevated: #3e4452;
+            --bg-grid: #4b5363; --border: #4b5363; --text-primary: #abb2bf; --text-secondary: #5c6370;
+            --text-muted: #3e4452; --accent: #61afef; --success: #98c379; --warning: #e5c07b;
+            --highlight: #e06c75; --course-cs: #c678dd; --course-ee: #e5c07b; --course-math: #98c379; --course-other: #61afef;
+        }
+        [data-theme="solarized"] {
+            --bg-base: #002b36; --bg-surface: #073642; --bg-card: #073642; --bg-elevated: #004d5f;
+            --bg-grid: #0a5a6e; --border: #586e75; --text-primary: #839496; --text-secondary: #93a1a1;
+            --text-muted: #586e75; --accent: #268bd2; --success: #859900; --warning: #b58900;
+            --highlight: #cb4b16; --course-cs: #6c71c4; --course-ee: #cb4b16; --course-math: #859900; --course-other: #268bd2;
+        }
+        [data-theme="nord"] {
+            --bg-base: #2e3440; --bg-surface: #3b4252; --bg-card: #434c5e; --bg-elevated: #4c566a;
+            --bg-grid: #5e6d8a; --border: #4c566a; --text-primary: #eceff4; --text-secondary: #e5e9f0;
+            --text-muted: #81a1c1; --accent: #88c0d0; --success: #a3be8c; --warning: #ebcb8b;
+            --highlight: #d08770; --course-cs: #b48ead; --course-ee: #d08770; --course-math: #a3be8c; --course-other: #88c0d0;
+        }
+        [data-theme="github-dark"] {
+            --bg-base: #0d1117; --bg-surface: #161b22; --bg-card: #21262d; --bg-elevated: #30363d;
+            --bg-grid: #3d444d; --border: #30363d; --text-primary: #c9d1d9; --text-secondary: #8b949e;
+            --text-muted: #6e7681; --accent: #58a6ff; --success: #3fb950; --warning: #d29922;
+            --highlight: #f0883e; --course-cs: #bc8cff; --course-ee: #f0883e; --course-math: #3fb950; --course-other: #58a6ff;
+        }
+        [data-theme="tokyo"] {
+            --bg-base: #1a1b26; --bg-surface: #16161e; --bg-card: #24283b; --bg-elevated: #2c3e50;
+            --bg-grid: #3b4261; --border: #2c3e50; --text-primary: #c0caf5; --text-secondary: #a9b1d6;
+            --text-muted: #565f89; --accent: #7aa2f7; --success: #9ece6a; --warning: #e0af68;
+            --highlight: #ff9e64; --course-cs: #bb9af7; --course-ee: #ff9e64; --course-math: #9ece6a; --course-other: #7aa2f7;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-base);
+            font-family: 'JetBrainsMono Nerd Font', 'Fira Code', monospace;
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        /* Visual Theme Picker */
+        .theme-picker {
+            max-width: 1400px;
+            margin: 0 auto 24px auto;
+            background: var(--bg-surface);
+            border-radius: 20px;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+        }
+        .theme-picker h3 {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        .theme-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .theme-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 2px solid transparent;
+            min-width: 70px;
+        }
+        .theme-card:hover {
+            transform: translateY(-2px);
+            background: var(--bg-elevated);
+        }
+        .theme-card.active {
+            border-color: var(--accent);
+            background: var(--bg-elevated);
+        }
+        .theme-swatch {
+            display: flex;
+            gap: 4px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+        }
+        .theme-name {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+        /* rest of UI */
+        .input-screen { max-width: 1000px; margin: 0 auto; }
+        .input-card {
+            background: var(--bg-surface);
+            border-radius: 32px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+        .input-card h1 { color: var(--highlight); font-size: 1.8rem; text-align: center; margin-bottom: 0.5rem; }
+        .sub { color: var(--text-secondary); text-align: center; margin-bottom: 1.8rem; font-size: 0.8rem; }
+        .format-buttons { display: flex; gap: 12px; justify-content: center; margin-bottom: 1.2rem; flex-wrap: wrap; }
+        .example-btn {
+            background: var(--bg-card); border: 1px solid var(--border); padding: 6px 18px;
+            border-radius: 40px; font-family: inherit; font-size: 0.7rem; color: var(--text-primary); cursor: pointer;
+        }
+        .example-btn:hover { background: var(--bg-elevated); }
+        textarea {
+            width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+            padding: 1.2rem; font-family: monospace; font-size: 0.7rem; color: var(--text-primary);
+            resize: vertical; margin-bottom: 1.5rem;
+        }
+        .button-group { display: flex; gap: 12px; justify-content: center; }
+        button {
+            background: var(--bg-card); border: 1px solid var(--border); padding: 10px 26px;
+            border-radius: 40px; font-family: inherit; font-weight: 600; color: var(--text-primary);
+            cursor: pointer; transition: 0.2s; font-size: 0.85rem;
+        }
+        button.primary { background: var(--accent); color: var(--bg-base); border: none; }
+        button.primary:hover { opacity: 0.85; transform: scale(0.98); }
+        .schedule-screen { max-width: 1400px; margin: 0 auto; display: none; }
+        .back-button {
+            background: var(--bg-card); border: 1px solid var(--border); padding: 8px 20px;
+            border-radius: 40px; color: var(--text-primary); cursor: pointer; margin-bottom: 1.5rem; font-size: 0.75rem;
+        }
+        .schedule-wrapper {
+            background: var(--bg-surface); border-radius: 28px; padding: 1.6rem 1.2rem;
+            border: 1px solid var(--border); overflow-x: auto;
+        }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 8px; }
+        .time-label { color: var(--highlight); font-size: 0.75rem; text-align: right; padding-right: 6px; align-self: center; }
+        .day-header { color: var(--highlight); text-align: center; font-weight: bold; }
+        .course-card { background-color: var(--bg-grid); padding: 8px; border-radius: 4px; }
+        .course-code { font-weight: bold; font-size: 0.8rem; }
+        .course-title { font-size: 0.7rem; color: var(--text-secondary); }
+        .time-room-text { color: var(--text-muted); font-size: 0.6rem; margin-top: 4px; }
+        .legend-strip {
+            margin-top: 1.5rem; background: var(--bg-card); border-radius: 20px; padding: 0.7rem 1rem;
+            display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.65rem; justify-content: center;
+            border: 1px solid var(--border);
+        }
+        .footer-note { text-align: center; margin-top: 1rem; font-size: 0.7rem; color: var(--text-muted); }
+        @font-face {
+            font-family: 'JetBrainsMono Nerd Font';
+            src: url('https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@master/patched-fonts/JetBrainsMono/Ligatures/Regular/JetBrainsMonoNerdFont-Regular.ttf') format('truetype');
+        }
+    </style>
+</head>
+<body>
+
+<!-- VISUAL THEME PICKER -->
+<div class="theme-picker">
+    <h3>🎨 PICK A THEME — click any swatch</h3>
+    <div class="theme-grid" id="themeGrid">
+        <div class="theme-card" data-theme="mocha">
+            <div class="theme-swatch"><div class="swatch" style="background:#1e1e2e;"></div><div class="swatch" style="background:#cba6f7;"></div><div class="swatch" style="background:#89b4fa;"></div></div>
+            <span class="theme-name">🐈 Mocha</span>
+        </div>
+        <div class="theme-card" data-theme="latte">
+            <div class="theme-swatch"><div class="swatch" style="background:#eff1f5;"></div><div class="swatch" style="background:#8839ef;"></div><div class="swatch" style="background:#1e66f5;"></div></div>
+            <span class="theme-name">☕ Latte</span>
+        </div>
+        <div class="theme-card" data-theme="onedark">
+            <div class="theme-swatch"><div class="swatch" style="background:#282c34;"></div><div class="swatch" style="background:#c678dd;"></div><div class="swatch" style="background:#61afef;"></div></div>
+            <span class="theme-name">⚫ One Dark</span>
+        </div>
+        <div class="theme-card" data-theme="solarized">
+            <div class="theme-swatch"><div class="swatch" style="background:#002b36;"></div><div class="swatch" style="background:#6c71c4;"></div><div class="swatch" style="background:#268bd2;"></div></div>
+            <span class="theme-name">🌞 Solarized</span>
+        </div>
+        <div class="theme-card" data-theme="nord">
+            <div class="theme-swatch"><div class="swatch" style="background:#2e3440;"></div><div class="swatch" style="background:#b48ead;"></div><div class="swatch" style="background:#88c0d0;"></div></div>
+            <span class="theme-name">❄️ Nord</span>
+        </div>
+        <div class="theme-card" data-theme="github-dark">
+            <div class="theme-swatch"><div class="swatch" style="background:#0d1117;"></div><div class="swatch" style="background:#bc8cff;"></div><div class="swatch" style="background:#58a6ff;"></div></div>
+            <span class="theme-name">🐙 GitHub</span>
+        </div>
+        <div class="theme-card" data-theme="tokyo">
+            <div class="theme-swatch"><div class="swatch" style="background:#1a1b26;"></div><div class="swatch" style="background:#bb9af7;"></div><div class="swatch" style="background:#7aa2f7;"></div></div>
+            <span class="theme-name">🌃 Tokyo</span>
+        </div>
+    </div>
+</div>
+
+<!-- INPUT SCREEN -->
+<div id="inputScreen" class="input-screen">
+    <div class="input-card">
+        <h1>unischedule</h1>
+        <div class="sub">Paste courses → instant visual schedule</div>
+        <div class="format-buttons"><button id="loadExampleBtn" class="example-btn">📘 Load Example</button></div>
+        <textarea id="courseInput" rows="12" placeholder="Paste any course format..."></textarea>
+        <div class="button-group"><button id="generateBtn" class="primary">✨ Generate Schedule →</button></div>
+    </div>
+</div>
+
+<!-- SCHEDULE SCREEN -->
+<div id="scheduleScreen" class="schedule-screen">
+    <button id="backBtn" class="back-button">← Back to Courses</button>
+    <div id="scheduleOutput" class="schedule-wrapper"><div style="text-align:center;padding:3rem;"> Generate schedule</div></div>
+    <div class="footer-note">~_~</div>
+</div>
+
+<script>
+    // THEME SYSTEM with visual cards
+    function setTheme(themeName) {
+        if (themeName === 'mocha') document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('weaver-theme', themeName);
+        document.querySelectorAll('.theme-card').forEach(card => {
+            if (card.getAttribute('data-theme') === themeName) card.classList.add('active');
+            else card.classList.remove('active');
+        });
+    }
+    const saved = localStorage.getItem('weaver-theme');
+    if (saved && saved !== 'mocha') setTheme(saved);
+    else setTheme('mocha');
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', () => setTheme(card.getAttribute('data-theme')));
+    });
+
+    // UNIVERSAL PARSER (same robust engine)
+    function normalizeDay(d) { const map = { MON:'Mon',TUE:'Tue',WED:'Wed',THU:'Thu',FRI:'Fri' }; return map[d.trim().toUpperCase().slice(0,3)] || d; }
+    function parseHour(timeStr) { let h = parseInt(timeStr.split(':')[0]); let isPM = timeStr.includes('PM'); if (isPM && h!==12) return h+12; if (!isPM && h===12) return 0; return h; }
+    function extractMeetings(text) {
+        let meets = [];
+        let reg = /(MON|TUE|WED|THU|FRI)\s+At\s+(\d{1,2}:\d{2}[AP]M)\s*-\s*(\d{1,2}:\d{2}[AP]M)(?:\s+On\s+(\S+))?/gi;
+        let m; while((m = reg.exec(text)) !== null) meets.push({ day: normalizeDay(m[1]), start: m[2], end: m[3], timeLabel: `${m[2]}–${m[3]}`, room: m[4] || '' });
+        let reg2 = /(Mon|Tue|Wed|Thu|Fri)\s+(\d{1,2}:\d{2}[AP]M)-(\d{1,2}:\d{2}[AP]M)/gi;
+        while((m = reg2.exec(text)) !== null) if(!meets.some(x=>x.day===m[1]&&x.start===m[2])) meets.push({ day: m[1], start: m[2], end: m[3], timeLabel: `${m[2]}–${m[3]}`, room: '' });
+        return meets;
+    }
+    function parseCourse(block) {
+        let full = block.split(/\r?\n/).join(' ');
+        let regex = /^(\d{6})\s+([A-Z]+)\s+(\d+)\s+(\d+)\s+(.+?)\s+(\d+\.?\d*)\s*(?:Lecture|Lab)?\s*(.*)$/i;
+        let m = full.match(regex); if(!m) return null;
+        let [,id,sub,num,sec,title,cred,rest] = m;
+        let meetings = extractMeetings(full + ' ' + rest);
+        if(!meetings.length) return null;
+        return { fullName: `${sub} ${num}`, title: title.trim(), section: `Sec ${sec}`, credits: parseFloat(cred), meetings };
+    }
+    function parseFull(raw){
+        let lines=raw.split(/\r?\n/), courses=[], cur='';
+        for(let line of lines){
+            if(line.match(/^\d{6}\s+[A-Z]/)){ if(cur.trim()){let c=parseCourse(cur); if(c) courses.push(c);} cur=line; }
+            else if(cur) cur+=' '+line;
+            else if(line.trim()) cur=line;
+        }
+        if(cur.trim()){let c=parseCourse(cur); if(c) courses.push(c);}
+        return courses;
+    }
+    function getRow(start){ let h=parseHour(start); if(h>=8&&h<10) return 2; if(h>=10&&h<11.5) return 3; if(h>=11.5&&h<13) return 4; if(h>=13&&h<14.5) return 5; if(h>=14.5&&h<16) return 6; if(h>=16&&h<18) return 7; if(h>=18) return 8; return 4; }
+    function buildSchedule(courses){
+        const days=['Mon','Tue','Wed','Thu','Fri'], rowTimes={2:'9:00 AM',3:'10:30 AM',4:'12:00 PM',5:'1:30 PM',6:'3:00 PM',7:'4:30 PM',8:'6:00 PM'};
+        let grid={}; for(let r=2;r<=8;r++){ grid[r]={Mon:null,Tue:null,Wed:null,Thu:null,Fri:null}; }
+        for(let c of courses){
+            for(let m of c.meetings){
+                let row=getRow(m.start), day=m.day;
+                if(grid[row] && grid[row][day]===null){
+                    let colorCls = (c.fullName.includes('CSCI')||c.fullName.includes('ENGR')||c.fullName.includes('MENG')) ? 'var(--course-cs)' : (c.fullName.includes('EEEN') ? 'var(--course-ee)' : (c.fullName.includes('MATH')||c.fullName.includes('ARAB') ? 'var(--course-math)' : 'var(--course-other)'));
+                    grid[row][day] = { code:c.fullName, title:c.title, time:m.timeLabel, section:c.section, room:m.room, color:colorCls };
+                }
+            }
+        }
+        let html=`<div class="schedule-grid"><div class="time-label"></div>`; days.forEach(d=>html+=`<div class="day-header">${d}</div>`);
+        for(let r=2;r<=8;r++){
+            html+=`<div class="time-label">${rowTimes[r]}</div>`;
+            for(let d of days){
+                let cell=grid[r][d];
+                if(cell){
+                    html+=`<div class="course-card"><div class="course-code" style="color:${cell.color}">${cell.code}</div><div class="course-title">${cell.title}</div><div class="time-room-text">${cell.time}</div><div class="time-room-text" style="color:var(--success);">${cell.section}</div>`;
+                    if(cell.room) html+=`<div class="time-room-text">📍 ${cell.room}</div>`;
+                    html+=`</div>`;
+                } else html+=`<div></div>`;
+            }
+        }
+        html+=`</div>`; return html;
+    }
+    function render(courses){
+        if(!courses.length) return `<div style="text-align:center;padding:2rem;color:var(--error);">⚠️ No courses parsed. Check format.</div>`;
+        let total=courses.reduce((s,c)=>s+c.credits,0);
+        let schedule=buildSchedule(courses);
+        let legend=`<div class="legend-strip"><span>📚 TOTAL CREDITS: ${total.toFixed(2)}</span><span><span style="background:var(--course-cs);display:inline-block;width:12px;height:12px;border-radius:2px;"></span> CSCI/ENGR/MENG</span><span><span style="background:var(--course-ee);width:12px;height:12px;border-radius:2px;"></span> EEEN</span><span><span style="background:var(--course-math);width:12px;height:12px;border-radius:2px;"></span> MATH/ARAB</span><span><span style="background:var(--course-other);width:12px;height:12px;border-radius:2px;"></span> Other</span></div>`;
+        return schedule+legend;
+    }
+    const exampleData = `100255 CSCI 215 1 Data Structures and Algorithms 3.0 Tue 9:00AM-10:15AM Thu 9:00AM-10:15AM
+100257 CSCI 326 2 Database Systems 3.0 Tue 1:30PM-2:45PM Thu 1:30PM-2:45PM
+100165 EEEN 220 1 Signals and Systems 3.0 Mon 12:00PM-1:15PM Wed 12:00PM-1:15PM
+100170 EEEN 221 1 Signals Lab 1.0 Mon 1:30PM-4:00PM Microprocessor Lab
+100275 EEEN 280 1 Electric Circuit Analysis I 3.0 Tue 10:30AM-11:45AM Thu 10:30AM-11:45AM
+100276 EEEN 281 1 Electric Circuit Lab 1.0 Tue 3:00PM-5:30PM ECE2 Lab
+100001 ARAB 101 1 Arabic Language 3.0 MON At 9:00AM - 10:15AM WED At 9:00AM - 10:15AM`;
+    const inputScreen=document.getElementById('inputScreen'), scheduleScreen=document.getElementById('scheduleScreen'), courseInput=document.getElementById('courseInput'), scheduleOutput=document.getElementById('scheduleOutput');
+    function showInput(){ inputScreen.style.display='block'; scheduleScreen.style.display='none'; }
+    function showSchedule(){ let raw=courseInput.value; if(!raw.trim()){ alert('Paste courses first'); return; } let courses=parseFull(raw); scheduleOutput.innerHTML=render(courses); inputScreen.style.display='none'; scheduleScreen.style.display='block'; }
+    document.getElementById('generateBtn').addEventListener('click',showSchedule);
+    document.getElementById('backBtn').addEventListener('click',showInput);
+    document.getElementById('loadExampleBtn').addEventListener('click',()=>{ courseInput.value=exampleData; });
+    courseInput.value=exampleData;
+</script>
+</body>
+</html>
